@@ -29,7 +29,7 @@ product_price = soup.find("span", class_="aok-offscreen")
 product_rating = soup.find("span", class_="a-icon-alt")
 product_bullets = soup.find("ul", class_="a-unordered-list a-vertical a-spacing-mini")
 product_tech_details = soup.find("table", id="productDetails_techSpec_section_1")
-product_reviews = soup.find("div", class_="a-section a-spacing-large reviews-content filterable-reviews-content celwidget")
+product_reviews = soup.find_all("span", {"data-hook": "review-body"})
 
 def print_text(element, label):
     if element:
@@ -49,12 +49,22 @@ def print_tech_details(table, label):
     else:
         print(f"{label} not found")
 
+
+reviews_list = []
+for review in product_reviews:
+    text = review.text.strip()
+    reviews_list.append(text)
+reviews_text = "\n".join(reviews_list) if reviews_list else "Not Found"
+
 print_text(product_title, "Product Title")
 print_text(product_price, "Product Price")
 print_text(product_rating, "Product Rating")
 print_text(product_bullets, "Product Bullets")
 print_tech_details(product_tech_details, "Product Technical Details")
-print_text(product_reviews, "Product Reviews")
+print("\nProduct Reviews:")
+for i, r in enumerate(reviews_list[:5], 1):   # first 5 reviews
+    print(f"{i}. {r}\n")
+
 
 #find, find_all 
 
@@ -68,7 +78,7 @@ with open("amazon_airpod_max.csv", mode='w', newline='') as file:
                      product_rating.text.strip() if product_rating else "Not Found", 
                      product_bullets.text.strip() if product_bullets else "Not Found", 
                      product_tech_details.text.strip() if product_tech_details else "Not Found", 
-                     product_reviews.text.strip() if product_reviews else "Not Found"])
+                     reviews_text])
 
 print("data saved!")
 
